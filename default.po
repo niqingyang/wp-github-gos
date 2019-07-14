@@ -1,0 +1,158 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: gos-sync\n"
+"POT-Creation-Date: 2019-07-14 18:17+0800\n"
+"PO-Revision-Date: 2019-07-14 18:25+0800\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 2.2\n"
+"X-Poedit-Basepath: .\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-KeywordsList: _e;__\n"
+"X-Poedit-SearchPath-0: gos-sync.php\n"
+
+#: gos-sync.php:457
+msgid "Github 附件存储设置"
+msgstr "Github Storage Setttings"
+
+#: gos-sync.php:462 gos-sync.php:463
+msgid "用户名"
+msgstr "username"
+
+#: gos-sync.php:465
+msgid ""
+"请先访问 <a href=\"https://github.com/\" target=\"_blank\">Github</a> 创"
+"建，再填写以上内容。"
+msgstr ""
+"please visit the <a href=\"https://github.com/\" target=\"_blank"
+"\">Github</a> Creation and fill in the above."
+
+#: gos-sync.php:469 gos-sync.php:470
+msgid "仓库名"
+msgstr "repo name"
+
+#: gos-sync.php:472
+msgid ""
+"请先访问 <a href=\"https://github.com/\" target=\"_blank\">Github</a> 创"
+"建 <code>仓库</code>，再填写以上内容。"
+msgstr ""
+"please visit <a href=\"https://github.com/\" target=\"_blank\">Github</"
+"a> to create <code> warehouse </code>, and then fill in the above."
+
+#: gos-sync.php:477
+msgid "access token"
+msgstr "access token"
+
+#: gos-sync.php:479
+msgid ""
+"请先访问 <a href=\"https://github.com/\" target=\"_blank\">Github</a> 创"
+"建 <code>access token</code>，再填写以上内容。"
+msgstr ""
+"please visit <a href=\"https://github.com/\" target=\"_blank\">Github</"
+"a> to create <code>access token</code>, and then fill in the above."
+
+#: gos-sync.php:483
+msgid "不上传缩略图"
+msgstr "not upload thumbnails"
+
+#: gos-sync.php:492 gos-sync.php:504
+msgid "建议不勾选"
+msgstr "no recommendation"
+
+#: gos-sync.php:495
+msgid "不在本地保留备份"
+msgstr "not keep backups locally"
+
+#: gos-sync.php:507
+msgid "本地文件夹"
+msgstr "local folder"
+
+#: gos-sync.php:508
+msgid "请输入上传文件夹"
+msgstr "please enter the upload folder"
+
+#: gos-sync.php:511
+msgid ""
+"附件在服务器上的存储位置，例如： <code>wp-content/uploads</code> （注意"
+"不要以“/”开头和结尾），根目录请输入 <code>.</code>。"
+msgstr ""
+"attachments are stored on the server, such as <code> wp-content/uploads "
+"</code> (be careful not to start and end with /). Enter <code>. </code> "
+"for the root directory."
+
+#: gos-sync.php:515
+msgid "URL前缀"
+msgstr "URL prefix"
+
+#: gos-sync.php:516
+msgid "请输入URL前缀"
+msgstr "Please enter the URL prefix"
+
+#: gos-sync.php:518
+msgid "注意："
+msgstr "Note:"
+
+#: gos-sync.php:521
+msgid ""
+"1）URL前缀的格式为 <code>https://raw.githubusercontent.com/{用户名}/{仓"
+"库名}/master/</code> <code>.</code> 时），或者 <code>https://raw."
+"githubusercontent.com/{用户名}/{仓库名}/master/{本地文件夹}</code>，“本"
+"地文件夹”务必与上面保持一致（结尾无<code>/</code>）。"
+msgstr ""
+"1) The prefix of the URL is in the form of <code>https://raw."
+"githubusercontent.com/{username}/{warehouse name}/master/</code> "
+"<code>. </code> or <code>https://raw.githubusercontent.com/{user name}/"
+"{warehouse name}/master/{local folder} </code>, and the \"local folder"
+"\" must be consistent with the above (no < code > at the end). >/ </"
+"code>."
+
+#: gos-sync.php:524
+msgid ""
+"2）github中的存放路径（即“文件夹”）与上述 <code>本地文件夹</code> 中定义"
+"的路径是相同的（出于方便切换考虑）。"
+msgstr ""
+"2) The storage path in GitHub (i.e. \"folder\") is the same as the path "
+"defined in the <code> local folder </code> mentioned above (for "
+"convenience of switching)"
+
+#: gos-sync.php:527
+msgid ""
+"3）如果需要使用 <code>独立域名</code> ，直接将 <code>{域名}</code> 替换"
+"为 <code>独立域名</code> 即可。"
+msgstr ""
+"3) If you need to use <code> independent domain name </code>, replace "
+"<code> {domain name} </code> with <code> independent domain name </code>"
+
+#: gos-sync.php:531
+msgid "更新选项"
+msgstr "update options"
+
+#: gos-sync.php:532
+msgid "更新"
+msgstr "update"
+
+#: gos-sync.php:540
+msgid "同步历史附件"
+msgstr "sync  historical files"
+
+#: gos-sync.php:542
+msgid "开始同步"
+msgstr "start sync"
+
+#: gos-sync.php:545
+msgid ""
+"注意：如果是首次同步，执行时间将会十分十分长（根据你的历史附件数量），有"
+"可能会因执行时间过长，页面显示超时或者报错。<br> 所以，建议那些几千上万"
+"附件的大神们，直接使用 Git 命令自主同步"
+msgstr ""
+"Note: If synchronized for the first time, the execution time will be "
+"very long (depending on the number of historical attachments you have), "
+"and there may be a page display timeout or error due to the execution "
+"time being too long. <br> So, it is recommended that the gods with tens "
+"of thousands of attachments use the Git command to synchronize "
+"themselves directly."

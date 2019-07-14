@@ -1,0 +1,23 @@
+{
+    "name": "niqingyang/wp-github-sync",
+    "authors": [
+        {
+            "name": "niqingyang",
+            "email": "niqy@qq.com"
+        }
+    ],
+    "require": {
+        "guzzlehttp/guzzle": "^6.3"
+    },
+	"repositories": {
+		"packagist": {
+			"type": "composer",
+			"url": "https://packagist.phpcomposer.com"
+		}
+	},
+	"autoload": {
+        "psr-4": {
+            "acme\\": "src/"
+        }
+    }
+}
