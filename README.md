@@ -1,8 +1,9 @@
 
-![](https://raw.githubusercontent.com/niqingyang/wp-github-gos/master/wp_github_gos.png)
+<p align="center">
+    <img src="/wp_github_gos.png" alt="wordpress-qcloud-cos" align="center" />
+</p>
+<p align="center">利用 github api 实现的一个存储附件（图床）的 wordpress 插件</p>
 
-## wp-github-gos
-利用 github api 实现的一个存储附件（图床）的 wordpress 插件
 
 ## 前言
 
@@ -33,7 +34,7 @@ Github 项目地址: https://github.com/niqingyang/wp-github-gos
 
 ## 插件预览
 
-![](https://raw.githubusercontent.com/niqingyang/wp-github-gos/master/screenshot-1.png)
+![](/screenshot-1.png)
 
 ## 常见问题
 
@@ -41,5 +42,5 @@ Github 项目地址: https://github.com/niqingyang/wp-github-gos
 
 这个插件已经加上了替换数据库中之前的旧资源地址链接功能，只需要填好对应的链接即可，如图所示
 
-![](https://raw.githubusercontent.com/niqingyang/wp-github-gos/master/screenshot-2.png)
+![](/screenshot-2.png)
 
