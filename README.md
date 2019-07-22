@@ -23,7 +23,7 @@
 
 ## 安装
 
-从 Github 下载源码，通过 WordPress 后台上传安装，或者直接将源码上传到 WordPress 插件目录wp-content\plugins，然后在后台启用
+从 Github 下载源码，通过 WordPress 后台上传安装，或者直接将源码上传到 WordPress 插件目录 `wp-content/plugins`，然后在后台启用
 
 Github 项目地址: https://github.com/niqingyang/wp-github-gos
 
@@ -35,7 +35,7 @@ Github 项目地址: https://github.com/niqingyang/wp-github-gos
 
 特别说明
 
-本插件仅支持PHP 5.4+版本
+本插件仅支持PHP 5.4+ 版本
 
 ## 插件预览
 
