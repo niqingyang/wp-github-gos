@@ -26,6 +26,7 @@ Github 项目地址: https://github.com/niqingyang/wp-github-gos
 修改配置
 
 方法一：在 WordPress 插件管理页面有设置按钮，进行设置
+
 方法二：在 WordPress 后台管理左侧导航栏设置下 `Github 存储`，点击进入设置页面
 
 特别说明
