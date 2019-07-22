@@ -8,13 +8,17 @@
 ## 前言
 
 本插件核心功能使用了 GitHub API
+
 设置页面和核心业务逻辑主要参考插件 [wordpress-qcloud-cos](https://github.com/sy-records/wordpress-qcloud-cos) 实现，替换了其中 腾讯云 COS 官方 SDK 为 GitHub API
 
 ## 插件特色
 
 使用 GitHub 存储服务存储 WordPress 站点图片等多媒体文件
+
 可配置是否上传缩略图和是否保留本地备份
+
 本地删除可同步删除腾讯云上面的文件
+
 支持替换数据库中旧的资源链接地址
 
 ## 安装
