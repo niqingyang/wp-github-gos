@@ -21,8 +21,9 @@ if(! defined('WP_PLUGIN_URL'))
 define('GITHUB_SYNC_BASENAME', plugin_basename(__FILE__));
 define('GITHUB_SYNC_BASEFOLDER', plugin_basename(dirname(__FILE__)));
 
-add_action('init', function(){
-	load_plugin_textdomain('gos-sync', false, basename(dirname(__FILE__)) . '/lang');
+add_action('init', function ()
+{
+	load_plugin_textdomain('wordpress-gos', false, basename(dirname(__FILE__)) . '/lang');
 });
 
 // 初始化选项
@@ -100,6 +101,7 @@ function github_file_upload ($object, $file, $opt = array())
 	$github_sync_options = get_option('github_sync_options', TRUE);
 	$github_owner = esc_attr($github_sync_options['owner']);
 	$github_repo = esc_attr($github_sync_options['repo']);
+	
 	if(@file_exists($file))
 	{
 		$ret = GithubApi::upload($github_owner, $github_repo, $file, $object);
@@ -181,6 +183,33 @@ function github_upload_attachments ($metadata)
 	
 	// 执行上传操作
 	github_file_upload('/' . $object, $file, $opt);
+	
+	// 获取URL参数
+	if(@file_exists($file))
+	{
+		// 获取WP配置信息
+		$github_sync_options = get_option('github_sync_options', TRUE);
+		$upload_url_params = $github_sync_options['upload_url_params'];
+		
+		if(! empty($upload_url_params) && strpos($object, "?") === false)
+		{
+			$image_data = getimagesize($file);
+			
+			if($image_data != false)
+			{
+				$upload_url_params = strtr($upload_url_params, [
+					'{width}' => $image_data[0],
+					'{height}' => $image_data[1],
+					'{size}' => $image_data['bits']
+				]);
+				$metadata['width'] = $image_data[0];
+				$metadata['height'] = $image_data[1];
+				$metadata['size'] = $image_data['bits'];
+				
+				$metadata['url'] .= '?' . trim($upload_url_params, '?');
+			}
+		}
+	}
 	
 	// 如果不在本地保存，则删除本地文件
 	if(github_is_delete_local_file())
@@ -360,9 +389,9 @@ function github_read_dir_queue ($dir)
 // 在插件列表页添加设置按钮
 function github_plugin_action_links ($links, $file)
 {
-	if($file == plugin_basename(dirname(__FILE__) . '/gos-sync.php'))
+	if($file == plugin_basename(dirname(__FILE__) . '/wordpress-gos.php'))
 	{
-		$links[] = '<a href="options-general.php?page=' . GITHUB_SYNC_BASEFOLDER . '/gos-sync.php">' . 设置 . '</a>';
+		$links[] = '<a href="options-general.php?page=' . GITHUB_SYNC_BASEFOLDER . '/wordpress-gos.php">' . 设置 . '</a>';
 	}
 	return $links;
 }
@@ -393,6 +422,7 @@ function github_setting_page ()
 		$options['nolocalsaving'] = (isset($_POST['nolocalsaving'])) ? 'true' : 'false';
 		// 仅用于插件卸载时比较使用
 		$options['upload_url_path'] = (isset($_POST['upload_url_path'])) ? trim(stripslashes($_POST['upload_url_path'])) : '';
+		$options['upload_url_params'] = (isset($_POST['upload_url_params'])) ? trim(stripslashes($_POST['upload_url_params'])) : '';
 	}
 	
 	if(! empty($_POST) and $_POST['type'] == 'github_sync_all')
@@ -420,6 +450,31 @@ function github_setting_page ()
 		echo '<div class="updated"><p><strong>本次操作成功同步' . $i . '个文件</strong></p></div>';
 	}
 	
+	// 替换数据库链接
+	if(! empty($_POST) and $_POST['type'] == 'qcloud_cos_replace')
+	{
+		global $wpdb;
+		$table_name = $wpdb->prefix . 'posts';
+		$oldurl = trim($_POST['old_url']);
+		$newurl = trim($_POST['new_url']);
+		
+		if(empty($oldurl))
+		{
+			echo '<div class="error"><p><strong>要替换的旧域名不能为空！</strong></p></div>';
+		}
+		
+		if(empty($newurl))
+		{
+			echo '<div class="error"><p><strong>要替换的新域名不能为空！</strong></p></div>';
+		}
+		
+		if(! empty($oldurl) && ! empty($newurl))
+		{
+			$result = $wpdb->query("UPDATE $table_name SET post_content = REPLACE( post_content, '$oldurl', '$newurl') ");
+			
+			echo '<div class="updated"><p><strong>替换成功！共批量执行' . $result . '条！</strong></p></div>';
+		}
+	}
 	// 若$options不为空数组，则更新数据
 	if($options !== array())
 	{
@@ -433,6 +488,9 @@ function github_setting_page ()
 		$upload_url_path = trim(trim(stripslashes($_POST['upload_url_path'])), '/');
 		update_option('upload_url_path', $upload_url_path);
 		
+		$upload_url_params = trim(trim(stripslashes($_POST['upload_url_params'])), '?');
+		update_option('upload_url_params', $upload_url_params);
+		
 		?>
 <div class="updated">
 	<p>
@@ -445,6 +503,7 @@ function github_setting_page ()
 	$github_sync_options = get_option('github_sync_options', TRUE);
 	$upload_path = get_option('upload_path');
 	$upload_url_path = get_option('upload_url_path');
+	$upload_url_params = get_option('upload_url_params');
 	
 	$github_owner = esc_attr($github_sync_options['owner']);
 	$github_repo = esc_attr($github_sync_options['repo']);
@@ -457,33 +516,33 @@ function github_setting_page ()
 	$github_nolocalsaving = ($github_nolocalsaving == 'true');
 	?>
 <div class="wrap" style="margin: 10px;">
-	<h2><?php _e('Github 附件存储设置', 'gos-sync')?></h2>
+	<h2><?php _e('Github 附件存储设置', 'wordpress-gos')?></h2>
 
-	<form name="form1" method="post" action="<?php echo wp_nonce_url('./options-general.php?page=' . GITHUB_SYNC_BASEFOLDER . '/gos-sync.php'); ?>">
+	<form name="form1" method="post" action="<?php echo wp_nonce_url('./options-general.php?page=' . GITHUB_SYNC_BASEFOLDER . '/wordpress-gos.php'); ?>">
 		<table class="form-table">
 			<tr>
-				<th><legend><?php _e('用户名', 'gos-sync')?></legend></th>
-				<td><input type="text" name="owner" value="<?php echo $github_owner; ?>" size="50" placeholder="<?php _e('用户名', 'gos-sync')?>" />
+				<th><legend><?php _e('用户名', 'wordpress-gos')?></legend></th>
+				<td><input type="text" name="owner" value="<?php echo $github_owner; ?>" size="50" placeholder="<?php _e('用户名', 'wordpress-gos')?>" />
 					<p>
-						<?php _e('请先访问 <a href="https://github.com/" target="_blank">Github</a> 创建，再填写以上内容。', 'gos-sync')?>
+						<?php _e('请先访问 <a href="https://github.com/" target="_blank">Github</a> 创建，再填写以上内容。', 'wordpress-gos')?>
 					</p></td>
 			</tr>
 			<tr>
-				<th><legend><?php _e('仓库名', 'gos-sync')?></legend></th>
-				<td><input type="text" name="repo" value="<?php echo $github_repo; ?>" size="50" placeholder="<?php _e('仓库名', 'gos-sync')?>" />
+				<th><legend><?php _e('仓库名', 'wordpress-gos')?></legend></th>
+				<td><input type="text" name="repo" value="<?php echo $github_repo; ?>" size="50" placeholder="<?php _e('仓库名', 'wordpress-gos')?>" />
 					<p>
-						<?php _e('请先访问 <a href="https://github.com/" target="_blank">Github</a> 创建 <code>仓库</code>，再填写以上内容。', 'gos-sync')?>
+						<?php _e('请先访问 <a href="https://github.com/" target="_blank">Github</a> 创建 <code>仓库</code>，再填写以上内容。', 'wordpress-gos')?>
 					</p></td>
 			</tr>
 			<tr>
 				<th><legend>Access Token</legend></th>
-				<td><input type="text" name="token" value="<?php echo $github_token; ?>" size="50" placeholder="<?php _e('access token', 'gos-sync')?>" />
+				<td><input type="text" name="token" value="<?php echo $github_token; ?>" size="50" placeholder="<?php _e('access token', 'wordpress-gos')?>" />
 					<p>
-						<?php _e('请先访问 <a href="https://github.com/" target="_blank">Github</a> 创建 <code>access token</code>，再填写以上内容。', 'gos-sync')?>
+						<?php _e('请先访问 <a href="https://github.com/" target="_blank">Github</a> 创建 <code>access token</code>，再填写以上内容。', 'wordpress-gos')?>
 					</p></td>
 			</tr>
 			<tr>
-				<th><legend><?php _e('不上传缩略图', 'gos-sync')?></legend></th>
+				<th><legend><?php _e('不上传缩略图', 'wordpress-gos')?></legend></th>
 				<td><input type="checkbox" name="nothumb" <?php
 	
 	if($github_nothumb)
@@ -492,10 +551,10 @@ function github_setting_page ()
 	}
 	?> />
 
-					<p><?php _e('建议不勾选', 'gos-sync')?></p></td>
+					<p><?php _e('建议不勾选', 'wordpress-gos')?></p></td>
 			</tr>
 			<tr>
-				<th><legend><?php _e('不在本地保留备份', 'gos-sync')?></legend></th>
+				<th><legend><?php _e('不在本地保留备份', 'wordpress-gos')?></legend></th>
 				<td><input type="checkbox" name="nolocalsaving" <?php
 	
 	if($github_nolocalsaving)
@@ -504,49 +563,82 @@ function github_setting_page ()
 	}
 	?> />
 
-					<p><?php _e('建议不勾选', 'gos-sync')?></p></td>
+					<p><?php _e('建议不勾选', 'wordpress-gos')?></p></td>
 			</tr>
 			<tr>
-				<th><legend><?php _e('本地文件夹', 'gos-sync')?></legend></th>
-				<td><input type="text" name="upload_path" value="<?php echo $upload_path; ?>" size="50" placeholder="<?php _e('请输入上传文件夹', 'gos-sync')?>" />
+				<th><legend><?php _e('本地文件夹', 'wordpress-gos')?></legend></th>
+				<td><input type="text" name="upload_path" value="<?php echo $upload_path; ?>" size="50" placeholder="<?php _e('请输入上传文件夹', 'wordpress-gos')?>" />
 
 					<p>
-						<?php _e('附件在服务器上的存储位置，例如： <code>wp-content/uploads</code> （注意不要以“/”开头和结尾），根目录请输入 <code>.</code>。', 'gos-sync')?>
+						<?php _e('附件在服务器上的存储位置，例如： <code>wp-content/uploads</code> （注意不要以“/”开头和结尾），根目录请输入 <code>.</code>。', 'wordpress-gos')?>
 					</p></td>
 			</tr>
 			<tr>
-				<th><legend><?php _e('URL前缀', 'gos-sync')?></legend></th>
-				<td><input type="text" name="upload_url_path" value="<?php echo $upload_url_path; ?>" size="50" placeholder="<?php _e('请输入URL前缀', 'gos-sync')?>" />
+				<th><legend><?php _e('URL前缀', 'wordpress-gos')?></legend></th>
+				<td><input type="text" name="upload_url_path" value="<?php echo $upload_url_path; ?>" size="50" placeholder="<?php _e('请输入URL前缀', 'wordpress-gos')?>" />
 					<p>
-						<b><?php _e('注意：', 'gos-sync')?></b>
+						<b><?php _e('注意：', 'wordpress-gos')?></b>
 					</p>
 					<p>
-						<?php _e('1）URL前缀的格式为 <code>https://raw.githubusercontent.com/{用户名}/{仓库名}/master/</code> <code>.</code> 时），或者 <code>https://raw.githubusercontent.com/{用户名}/{仓库名}/master/{本地文件夹}</code>，“本地文件夹”务必与上面保持一致（结尾无<code>/</code>）。', 'gos-sync')?>
+						<?php _e('1）URL前缀的格式为 <code>https://raw.githubusercontent.com/{用户名}/{仓库名}/master/</code> <code>.</code> 时），或者 <code>https://raw.githubusercontent.com/{用户名}/{仓库名}/master/{本地文件夹}</code>，“本地文件夹”务必与上面保持一致（结尾无<code>/</code>）。', 'wordpress-gos')?>
 					</p>
 					<p>
-						<?php _e('2）github中的存放路径（即“文件夹”）与上述 <code>本地文件夹</code> 中定义的路径是相同的（出于方便切换考虑）。', 'gos-sync')?>
+						<?php _e('2）github中的存放路径（即“文件夹”）与上述 <code>本地文件夹</code> 中定义的路径是相同的（出于方便切换考虑）。', 'wordpress-gos')?>
 					</p>
 					<p>
-						<?php _e('3）如果需要使用 <code>独立域名</code> ，直接将 <code>{域名}</code> 替换为 <code>独立域名</code> 即可。', 'gos-sync')?>
+						<?php _e('3）如果需要使用 <code>独立域名</code> ，直接将 <code>{域名}</code> 替换为 <code>独立域名</code> 即可。', 'wordpress-gos')?>
 					</p></td>
 			</tr>
 			<tr>
-				<th><legend><?php _e('更新选项', 'gos-sync')?></legend></th>
-				<td><input type="submit" name="submit" value="<?php _e('更新', 'gos-sync')?>" /></td>
+				<th><legend><?php _e('URL参数', 'wordpress-gos')?></legend></th>
+				<td><input type="text" name="upload_url_params" value="<?php echo $upload_url_params; ?>" size="50" placeholder="<?php _e('请输入URL参数', 'wordpress-gos')?>" />
+					<p>
+						<b><?php _e('注意：', 'wordpress-gos')?></b>
+					</p>
+					<p>
+						<?php _e('1）URL参数仅对图片起作用，支持向URL后面添加width（宽度）、height（高度）、size（大小）三个参数，例如：输入w={width}&h={height}&s={size} 会生成图片链接 http://xxx.xxx/xxx/xxx/demo.png?w=200&h=300&size=12345', 'wordpress-gos')?>
+					</p></td>
+			</tr>
+			<tr>
+				<th><legend><?php _e('更新选项', 'wordpress-gos')?></legend></th>
+				<td><input type="submit" name="submit" value="<?php _e('更新', 'wordpress-gos')?>" /></td>
 			</tr>
 		</table>
 		<input type="hidden" name="type" value="github_set">
 	</form>
-	<form name="form1" method="post" action="<?php echo wp_nonce_url('./options-general.php?page=' . GITHUB_SYNC_BASEFOLDER . '/gos-sync.php'); ?>">
+	<form name="form1" method="post" action="<?php echo wp_nonce_url('./options-general.php?page=' . GITHUB_SYNC_BASEFOLDER . '/wordpress-gos.php'); ?>">
 		<table class="form-table">
 			<tr>
-				<th><legend><?php _e('同步历史附件', 'gos-sync')?></legend></th>
+				<th><legend><?php _e('同步历史附件', 'wordpress-gos')?></legend></th>
 				<input type="hidden" name="type" value="github_sync_all">
-				<td><input type="submit" name="submit" value="<?php _e('开始同步', 'gos-sync')?>" />
+				<td><input type="submit" name="submit" value="<?php _e('开始同步', 'wordpress-gos')?>" />
 					<p>
 						<b>
-							<?php _e('注意：如果是首次同步，执行时间将会十分十分长（根据你的历史附件数量），有可能会因执行时间过长，页面显示超时或者报错。<br> 所以，建议那些几千上万附件的大神们，直接使用 Git 命令自主同步', 'gos-sync')?>
+							<?php _e('注意：如果是首次同步，执行时间将会十分十分长（根据你的历史附件数量），有可能会因执行时间过长，页面显示超时或者报错。<br> 所以，建议那些几千上万附件的大神们，直接使用 Git 命令自主同步', 'wordpress-gos')?>
 						</b>
+					</p></td>
+			</tr>
+		</table>
+	</form>
+	<hr>
+	<form name="form1" method="post" action="<?php echo wp_nonce_url('./options-general.php?page=' . GITHUB_SYNC_BASEFOLDER . '/wordpress-gos.php'); ?>">
+		<table class="form-table">
+			<tr>
+				<th>                       <legend><?php _e('数据库原链接替换', 'wordpress-gos')?></legend>
+				</th>
+				<td><input type="text" name="old_url" size="50" required="required" style="width: 450px" placeholder="<?php _e('请输入要替换的旧域名', 'wordpress-gos')?>" /></td>
+			</tr>
+			<tr>
+				<th><legend></legend></th>
+				<td><input type="text" name="new_url" size="50" required="required" style="width: 450px" placeholder="<?php _e('请输入要替换的新域名', 'wordpress-gos')?>" /></td>
+			</tr>
+			<tr>
+				<th>                        <legend></legend>
+				</th>
+				<input type="hidden" name="type" value="qcloud_cos_replace">
+				<td><input type="submit" name="submit" value="<?php _e('开始替换', 'wordpress-gos')?>" />                    
+					<p>
+						<b><?php _e('注意：如果是首次替换，请注意备份！此功能只限于替换文章中使用的资源链接', 'wordpress-gos')?></b>
 					</p></td>
 			</tr>
 		</table>

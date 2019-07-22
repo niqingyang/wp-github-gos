@@ -1,30 +1,35 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: wordpress-gos\n"
-"POT-Creation-Date: 2019-07-22 23:06+0800\n"
-"PO-Revision-Date: 2019-07-22 23:07+0800\n"
+"Project-Id-Version: Github 附件存储\n"
+"POT-Creation-Date: 2019-07-22 23:48+0800\n"
+"PO-Revision-Date: 2019-07-22 23:53+0800\n"
 "Last-Translator: \n"
 "Language-Team: \n"
-"Language: zh_CN\n"
+"Language: en_US\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 2.2\n"
-"X-Poedit-Basepath: .\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Poedit-Basepath: ..\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Poedit-Flags-xgettext: --add-comments=translators:\n"
+"X-Poedit-WPHeader: wordpress-gos.php\n"
 "X-Poedit-SourceCharset: UTF-8\n"
-"X-Poedit-KeywordsList: _e;__\n"
-"X-Poedit-SearchPath-0: wordpress-gos.php\n"
+"X-Poedit-KeywordsList: __;_e;_n:1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;esc_attr__;"
+"esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c;_n_noop:1,2;"
+"_nx_noop:3c,1,2;__ngettext_noop:1,2\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPathExcluded-0: *.js\n"
 
-#: wordpress-gos.php:505
+#: wordpress-gos.php:519
 msgid "Github 附件存储设置"
 msgstr "Github Storage Setttings"
 
-#: wordpress-gos.php:510 wordpress-gos.php:511
+#: wordpress-gos.php:524 wordpress-gos.php:525
 msgid "用户名"
 msgstr "username"
 
-#: wordpress-gos.php:513
+#: wordpress-gos.php:527
 msgid ""
 "请先访问 <a href=\"https://github.com/\" target=\"_blank\">Github</a> 创建，"
 "再填写以上内容。"
@@ -32,11 +37,11 @@ msgstr ""
 "please visit the <a href=\"https://github.com/\" target=\"_blank\">Github</"
 "a> Creation and fill in the above."
 
-#: wordpress-gos.php:517 wordpress-gos.php:518
+#: wordpress-gos.php:531 wordpress-gos.php:532
 msgid "仓库名"
 msgstr "repo name"
 
-#: wordpress-gos.php:520
+#: wordpress-gos.php:534
 msgid ""
 "请先访问 <a href=\"https://github.com/\" target=\"_blank\">Github</a> 创建 "
 "<code>仓库</code>，再填写以上内容。"
@@ -44,11 +49,11 @@ msgstr ""
 "please visit <a href=\"https://github.com/\" target=\"_blank\">Github</a> to "
 "create <code> warehouse </code>, and then fill in the above."
 
-#: wordpress-gos.php:525
+#: wordpress-gos.php:539
 msgid "access token"
 msgstr "access token"
 
-#: wordpress-gos.php:527
+#: wordpress-gos.php:541
 msgid ""
 "请先访问 <a href=\"https://github.com/\" target=\"_blank\">Github</a> 创建 "
 "<code>access token</code>，再填写以上内容。"
@@ -56,27 +61,27 @@ msgstr ""
 "please visit <a href=\"https://github.com/\" target=\"_blank\">Github</a> to "
 "create <code>access token</code>, and then fill in the above."
 
-#: wordpress-gos.php:531
+#: wordpress-gos.php:545
 msgid "不上传缩略图"
 msgstr "not upload thumbnails"
 
-#: wordpress-gos.php:540 wordpress-gos.php:552
+#: wordpress-gos.php:554 wordpress-gos.php:566
 msgid "建议不勾选"
 msgstr "no recommendation"
 
-#: wordpress-gos.php:543
+#: wordpress-gos.php:557
 msgid "不在本地保留备份"
 msgstr "not keep backups locally"
 
-#: wordpress-gos.php:555
+#: wordpress-gos.php:569
 msgid "本地文件夹"
 msgstr "local folder"
 
-#: wordpress-gos.php:556
+#: wordpress-gos.php:570
 msgid "请输入上传文件夹"
 msgstr "please enter the upload folder"
 
-#: wordpress-gos.php:559
+#: wordpress-gos.php:573
 msgid ""
 "附件在服务器上的存储位置，例如： <code>wp-content/uploads</code> （注意不要"
 "以“/”开头和结尾），根目录请输入 <code>.</code>。"
@@ -85,19 +90,19 @@ msgstr ""
 "code> (be careful not to start and end with /). Enter <code>. </code> for "
 "the root directory."
 
-#: wordpress-gos.php:563
+#: wordpress-gos.php:577
 msgid "URL前缀"
 msgstr "URL prefix"
 
-#: wordpress-gos.php:564
+#: wordpress-gos.php:578
 msgid "请输入URL前缀"
 msgstr "Please enter the URL prefix"
 
-#: wordpress-gos.php:566 wordpress-gos.php:582
+#: wordpress-gos.php:580 wordpress-gos.php:596
 msgid "注意："
 msgstr "Note:"
 
-#: wordpress-gos.php:569
+#: wordpress-gos.php:583
 msgid ""
 "1）URL前缀的格式为 <code>https://raw.githubusercontent.com/{用户名}/{仓库名}/"
 "master/</code> <code>.</code> 时），或者 <code>https://raw.githubusercontent."
@@ -110,7 +115,7 @@ msgstr ""
 "name}/master/{local folder} </code>, and the \"local folder\" must be "
 "consistent with the above (no < code > at the end). >/ </code>."
 
-#: wordpress-gos.php:572
+#: wordpress-gos.php:586
 msgid ""
 "2）github中的存放路径（即“文件夹”）与上述 <code>本地文件夹</code> 中定义的路"
 "径是相同的（出于方便切换考虑）。"
@@ -119,7 +124,7 @@ msgstr ""
 "defined in the <code> local folder </code> mentioned above (for convenience "
 "of switching)"
 
-#: wordpress-gos.php:575
+#: wordpress-gos.php:589
 msgid ""
 "3）如果需要使用 <code>独立域名</code> ，直接将 <code>{域名}</code> 替换为 "
 "<code>独立域名</code> 即可。"
@@ -127,38 +132,42 @@ msgstr ""
 "3) If you need to use <code> independent domain name </code>, replace <code> "
 "{domain name} </code> with <code> independent domain name </code>"
 
-#: wordpress-gos.php:579
+#: wordpress-gos.php:593
 msgid "URL参数"
-msgstr ""
+msgstr "URL Params"
 
-#: wordpress-gos.php:580
+#: wordpress-gos.php:594
 msgid "请输入URL参数"
 msgstr "Please enter the URL Params"
 
-#: wordpress-gos.php:585
+#: wordpress-gos.php:599
 msgid ""
 "1）URL参数仅对图片起作用，支持向URL后面添加width（宽度）、height（高度）、"
 "size（大小）三个参数，例如：输入w={width}&h={height}&s={size} 会生成图片链接 "
 "http://xxx.xxx/xxx/xxx/demo.png?w=200&h=300&size=12345"
 msgstr ""
+"1) The URL parameter only works for the picture. It supports adding width, "
+"height and size to the back of the URL. For example, input w={width}"
+"&h={height}&s={size} will generate the picture link http://xxx.xxx/xxxx/demo."
+"png?W=200&h=300&size=12345."
 
-#: wordpress-gos.php:589
+#: wordpress-gos.php:603
 msgid "更新选项"
 msgstr "update options"
 
-#: wordpress-gos.php:590
+#: wordpress-gos.php:604
 msgid "更新"
 msgstr "update"
 
-#: wordpress-gos.php:598
+#: wordpress-gos.php:612
 msgid "同步历史附件"
 msgstr "sync  historical files"
 
-#: wordpress-gos.php:600
+#: wordpress-gos.php:614
 msgid "开始同步"
 msgstr "start sync"
 
-#: wordpress-gos.php:603
+#: wordpress-gos.php:617
 msgid ""
 "注意：如果是首次同步，执行时间将会十分十分长（根据你的历史附件数量），有可能"
 "会因执行时间过长，页面显示超时或者报错。<br> 所以，建议那些几千上万附件的大神"
@@ -170,23 +179,23 @@ msgstr ""
 "long. <br> So, it is recommended that the gods with tens of thousands of "
 "attachments use the Git command to synchronize themselves directly."
 
-#: wordpress-gos.php:613
+#: wordpress-gos.php:627
 msgid "数据库原链接替换"
 msgstr "Replace of original database links"
 
-#: wordpress-gos.php:615
+#: wordpress-gos.php:629
 msgid "请输入要替换的旧域名"
 msgstr "Please enter the old domain name to replace"
 
-#: wordpress-gos.php:619
+#: wordpress-gos.php:633
 msgid "请输入要替换的新域名"
 msgstr "Please enter the new  domain name to replace"
 
-#: wordpress-gos.php:626
+#: wordpress-gos.php:639
 msgid "开始替换"
 msgstr "Start replacing"
 
-#: wordpress-gos.php:628
+#: wordpress-gos.php:641
 msgid "注意：如果是首次替换，请注意备份！此功能只限于替换文章中使用的资源链接"
 msgstr ""
 "Note: If it is the first replacement, please pay attention to backup! This "
