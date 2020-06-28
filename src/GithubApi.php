@@ -43,6 +43,11 @@ class GithubApi
 	// 暂时未用到
 	const API_REF_URL = '/repos/{owner}/{repo}/git/refs/heads/master?access_token={token}';
 	
+	/**
+	 * 访问令牌
+	 *
+	 * @var string
+	 */
 	private static $access_token;
 	
 	/**
