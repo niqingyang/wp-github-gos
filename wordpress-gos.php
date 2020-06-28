@@ -105,6 +105,17 @@ function github_file_upload ($object, $file, $opt = array())
 	if(@file_exists($file))
 	{
 		$ret = GithubApi::upload($github_owner, $github_repo, $file, $object);
+		
+		if($ret['code'] != 0)
+		{
+			GithubApi::error(json_encode($ret, JSON_UNESCAPED_UNICODE));
+		}
+		else
+		{
+			GithubApi::info(json_encode($ret, JSON_UNESCAPED_UNICODE));
+		}
+		
+		return $ret;
 	}
 	else
 	{
@@ -182,7 +193,14 @@ function github_upload_attachments ($metadata)
 	);
 	
 	// 执行上传操作
-	github_file_upload('/' . $object, $file, $opt);
+	$ret = github_file_upload('/' . $object, $file, $opt);
+	
+	if($ret !== false && is_array($ret) && $ret['code'] != 0)
+	{
+		return [
+			'error' => $ret['message']
+		];
+	}
 	
 	// 获取URL参数
 	if(@file_exists($file))

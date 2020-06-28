@@ -28,6 +28,11 @@ class GithubApi
 	const API_NETWORK_ERROR = - 2;
 	
 	/**
+	 * 请求错误
+	 */
+	const API_REQUEST_ERROR = - 3;
+	
+	/**
 	 * 数据完整性错误
 	 */
 	const API_INTEGRITY_ERROR = - 3;
@@ -57,6 +62,13 @@ class GithubApi
 	private static $client;
 	
 	/**
+	 * 日志文件
+	 *
+	 * @var string|boolean false-禁止记录日志
+	 */
+	private static $log_file = false;
+	
+	/**
 	 * 初始化
 	 *
 	 * @param array $config
@@ -74,6 +86,11 @@ class GithubApi
 		if(isset($config['access_token']))
 		{
 			static::setAccessToken($config['access_token']);
+		}
+		
+		if(static::$log_file !== false)
+		{
+			static::$log_file = dirname(__DIR__) . '/info.log';
 		}
 	}
 	
@@ -146,9 +163,11 @@ class GithubApi
 	 *        	上传的文件路径
 	 * @param string $insertOnly
 	 *        	同名文件是否覆盖
+	 * @param integer $retry
+	 *        	部分失败的原因会进行尝试重新上传，最多不超过重试次数
 	 * @return array
 	 */
-	public static function upload ($owner, $repo, $srcPath, $dstPath, $message = '', $insertOnly = false, $sha = null)
+	public static function upload ($owner, $repo, $srcPath, $dstPath, $message = '', $insertOnly = false, $sha = null, $retry = 3)
 	{
 		if(! file_exists($srcPath))
 		{
@@ -208,8 +227,8 @@ class GithubApi
 			{
 				return array(
 					'code' => $e->getCode(),
-					'message' => '资源冲突',
-					'data' => []
+					'data' => [],
+					'message' => '资源冲突'
 				);
 			}
 			// 更新资源却没有提供 sha 签名值
@@ -236,6 +255,20 @@ class GithubApi
 					'message' => $e->getMessage()
 				);
 			}
+		}
+		catch(\Exception $e)
+		{
+			// 部分失败的原因会导致重试，不超过3次
+			if($retry > 0 && strpos($e->getMessage(), 'cURL error 35: OpenSSL SSL_connect: SSL_ERROR_SYSCALL') !== false)
+			{
+				return static::upload($owner, $repo, $srcPath, $dstPath, $message, $insertOnly, $sha, $retry - 1);
+			}
+			
+			return array(
+				'code' => $e->getCode() == 0 ? 0 : static::API_REQUEST_ERROR,
+				'data' => [],
+				'message' => $e->getMessage()
+			);
 		}
 	}
 	
@@ -379,5 +412,41 @@ class GithubApi
 		$path = preg_replace('#/+#', '/', $path);
 		
 		return $path;
+	}
+	
+	/**
+	 * 记录错误信息
+	 *
+	 * @param string $message
+	 * @return boolean
+	 */
+	public static function error ($message)
+	{
+		if(empty(static::$log_file))
+		{
+			return false;
+		}
+		
+		$date = date('Y-m-d H:i:s');
+		
+		@file_put_contents(static::$log_file, "[ERROR][{$date}] " . $message . "\n", FILE_APPEND);
+	}
+	
+	/**
+	 * 记录日志信息
+	 *
+	 * @param string $message
+	 * @return boolean
+	 */
+	public static function info ($message)
+	{
+		if(empty(static::$log_file))
+		{
+			return false;
+		}
+		
+		$date = date('Y-m-d H:i:s');
+		
+		@file_put_contents(static::$log_file, "[INFO][{$date}] " . $message . "\n", FILE_APPEND);
 	}
 }
