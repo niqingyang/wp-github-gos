@@ -36,8 +36,11 @@ class GithubApi
 	
 	const API_URL = '/repos/{owner}/{repo}/contents/{path}';
 	
-	const API_TOKEN_URL = '/repos/{owner}/{repo}/contents/{path}?access_token={token}';
+	// 协议有变动，需要将 access_token 放入 header 中发送
+	// https://developer.github.com/changes/2020-02-10-deprecating-auth-through-query-param/
+	const API_TOKEN_URL = '/repos/{owner}/{repo}/contents/{path}';
 	
+	// 暂时未用到
 	const API_REF_URL = '/repos/{owner}/{repo}/git/refs/heads/master?access_token={token}';
 	
 	private static $access_token;
@@ -48,15 +51,24 @@ class GithubApi
 	 */
 	private static $client;
 	
+	/**
+	 * 请求参数
+	 *
+	 * @var array
+	 */
+	private static $options = [];
+	
 	public static function init ($config = [])
 	{
-		static::$client = new \GuzzleHttp\Client([
+		static::$options = [
 			'verify' => false,
 			'base_uri' => static::BASE_URL,
 			'headers' => [
 				'Content-Type' => 'application/json'
 			]
-		]);
+		];
+		
+		static::$client = new \GuzzleHttp\Client(static::$options);
 		
 		if(isset($config['access_token']))
 		{
@@ -98,14 +110,17 @@ class GithubApi
 		$url = strtr(static::API_TOKEN_URL, [
 			'{owner}' => $owner,
 			'{repo}' => $repo,
-			'{path}' => $path,
-			'{token}' => static::$access_token
+			'{path}' => $path
 		]);
 		
 		try
 		{
 			// 通过 head 请求获取 sha 哈希值
-			$response = static::$client->head($url);
+			$response = static::$client->head($url, [
+				'headers' => [
+					'Authorization' => 'token ' . static::$access_token
+				]
+			]);
 			
 			$sha = trim(current($response->getHeader("etag")), "\"");
 			
@@ -148,8 +163,7 @@ class GithubApi
 		$url = strtr(static::API_TOKEN_URL, [
 			'{owner}' => $owner,
 			'{repo}' => $repo,
-			'{path}' => ltrim($path, "/"),
-			'{token}' => static::$access_token
+			'{path}' => ltrim($path, "/")
 		]);
 		
 		try
@@ -168,6 +182,9 @@ class GithubApi
 			}
 			
 			$response = static::$client->put($url, [
+				'headers' => [
+					'Authorization' => 'token ' . static::$access_token
+				],
 				'body' => json_encode($body)
 			]);
 			
@@ -244,8 +261,7 @@ class GithubApi
 		$url = strtr(static::API_TOKEN_URL, [
 			'{owner}' => $owner,
 			'{repo}' => $repo,
-			'{path}' => ltrim($path, "/"),
-			'{token}' => static::$access_token
+			'{path}' => ltrim($path, "/")
 		]);
 		
 		try
@@ -258,6 +274,9 @@ class GithubApi
 			}
 			
 			$response = static::$client->delete($url, [
+				'headers' => [
+					'Authorization' => 'token ' . static::$access_token
+				],
 				'body' => json_encode([
 					'message' => $message,
 					'sha' => $sha
