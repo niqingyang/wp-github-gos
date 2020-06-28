@@ -52,23 +52,19 @@ class GithubApi
 	private static $client;
 	
 	/**
-	 * 请求参数
+	 * 初始化
 	 *
-	 * @var array
+	 * @param array $config
 	 */
-	private static $options = [];
-	
 	public static function init ($config = [])
 	{
-		static::$options = [
+		static::$client = new \GuzzleHttp\Client([
 			'verify' => false,
 			'base_uri' => static::BASE_URL,
 			'headers' => [
 				'Content-Type' => 'application/json'
 			]
-		];
-		
-		static::$client = new \GuzzleHttp\Client(static::$options);
+		]);
 		
 		if(isset($config['access_token']))
 		{
