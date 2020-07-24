@@ -49,3 +49,118 @@ Github 项目地址: https://github.com/niqingyang/wp-github-gos
 
 ![](/screenshot-2.png)
 
+## WP-Editor.md
+
+如果使用的 Markdown 编辑器是 WP-Editor.md，那么可以通过在主题模板下的 functions.php 文件中加入下面的代码，即可实现在编辑器中粘帖截图上传的功能
+
+```php
+/**
+ * 文章编辑页面从媒体选择器中插入图片
+ *
+ * @param string $html
+ * @param integer $id
+ * @param string $caption
+ * @param string $title
+ * @param string $align
+ * @param string $url
+ * @param string $size
+ * @param string $alt
+ * @return mixed
+ */
+function acme_image_send_to_editor ($html, $id, $caption, $title, $align, $url, $size, $alt)
+{
+    $attrs = wp_kses_hair($html, wp_allowed_protocols());
+
+    $attrs = array_column($attrs, 'value', 'name');
+
+    $src = $url . '?w=' . $attrs['width'] . '&h=' . $attrs['height'] . '&id=' . $id;
+
+    $html = str_replace($url, $src, $html);
+
+    return $html;
+}
+
+add_filter('image_send_to_editor', 'acme_image_send_to_editor', 10, 8);
+
+/**
+ * 粘帖图片上传，替换EditorMD插件的粘帖上传
+ */
+function acme_imagepaste_action_callback ()
+{
+    $result = array(
+        'error' => ''
+    );
+    $upload = wp_upload_dir();
+    $uploadUrl = $upload['url'];
+    $uploadDir = $upload['path'];
+    $extension = '';
+    list($data, $image) = explode(';', $_REQUEST['dataurl']);
+    list($field, $type) = explode(':', $data);
+    list($encoding, $content) = explode(',', $image);
+    if($type == 'image/png')
+    {
+        $extension = 'png';
+    }
+    $name = md5($_REQUEST['dataurl']);
+    if(! $extension)
+    {
+        $result['error'] = "Could not determine image extension type";
+    }
+    else
+    {
+        $file = $uploadDir . '/paste-' . $name . '.' . $extension;
+        file_put_contents($file, base64_decode($content));
+        // 获取图片尺寸
+        $size = @getimagesize($file);
+
+        if($size == false)
+        {
+            $result['error'] = "Could not get image size";
+        }
+        else
+        {
+            $_FILES['file'] = [
+                'name' => '/paste-' . $name . '.' . $extension,
+                'type' => 'image/' . $extension,
+                'tmp_name' => $file,
+                'error' => 0,
+                'size' => filesize($file)
+            ];
+
+            $time = current_time('mysql');
+
+            $overrides = array(
+                'test_form' => false,
+                'action' => 'acme_imagepaste_action'
+            );
+
+            $file = wp_handle_upload($_FILES['file'], $overrides, $time);
+
+            if(isset($file['error']))
+            {
+                $result['error'] = $file['error'];
+            }
+            else
+            {
+                if(strpos($file['url'], '?'))
+                {
+                    $url = $file['url'];
+                }
+                else
+                {
+                    $url = $file['url'] . '?w=' . $size[0] . '&h=' . $size[1];
+                }
+
+                $result['w3tc'] = 0;
+                $result['url'] = $url;
+                $result['elementid'] = $_REQUEST['elementid'];
+            }
+        }
+    }
+
+    echo json_encode($result);
+    die();
+}
+
+add_action('wp_ajax_imagepaste_action', 'acme_imagepaste_action_callback', 1);
+```
